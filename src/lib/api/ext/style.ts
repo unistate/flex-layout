@@ -19,8 +19,6 @@ import {
   Self,
   SimpleChanges,
   OnInit,
-  Inject,
-  PLATFORM_ID,
 } from '@angular/core';
 import {NgStyle} from '@angular/common';
 
@@ -36,8 +34,9 @@ import {
   NgStyleType,
   NgStyleSanitizer,
   ngStyleUtils as _
-} from '../../utils/style-transforms';
+} from '../../utils/styling/style-transforms';
 import {RendererAdapter} from '../core/renderer-adapter';
+import {StyleService} from '../../utils/styling/styler';
 
 
 /**
@@ -93,9 +92,9 @@ export class StyleDirective extends BaseFxDirective
               protected _renderer: Renderer2,
               protected _differs: KeyValueDiffers,
               @Optional() @Self() private _ngStyleInstance: NgStyle,
-              @Inject(PLATFORM_ID) protected _platformId: Object) {
+              protected _styler: StyleService) {
 
-    super(monitor, _ngEl, _renderer, _platformId);
+    super(monitor, _ngEl, _styler);
     this._configureAdapters();
   }
 
@@ -138,9 +137,12 @@ export class StyleDirective extends BaseFxDirective
      */
     protected _configureAdapters() {
         this._base = new BaseFxDirectiveAdapter(
-            'ngStyle', this.monitor, this._ngEl, this._renderer, this._platformId
+          'ngStyle',
+          this.monitor,
+          this._ngEl,
+          this._styler
         );
-        if ( !this._ngStyleInstance ) {
+        if (!this._ngStyleInstance) {
           // Create an instance NgClass Directive instance only if `ngClass=""` has NOT been
           // defined on the same host element; since the responsive variations may be defined...
           let adapter = new RendererAdapter(this._renderer);

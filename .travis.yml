@@ -21,6 +21,7 @@ jobs:
     - env: "MODE=lint"
     - env: "MODE=aot"
     - env: "MODE=prerender"
+    - env: "MODE=ssr"
     # Closure Compiler CI check is temporarily disabled until a new version of
     # the tool is released with https://github.com/google/closure-compiler/pull/2600
     # - env: "MODE=closure-compiler"

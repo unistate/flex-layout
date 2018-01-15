@@ -9,8 +9,8 @@ import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
 
-import {customMatchers} from './testing/custom-matchers';
-import {makeExpectDOMFrom} from './testing/helpers';
+import {customMatchers} from '../testing/custom-matchers';
+import {makeExpectDOMFrom} from '../testing/helpers';
 
 describe('style-utils directive', () => {
   let expectDOMFrom = makeExpectDOMFrom(() => TestLayoutComponent);

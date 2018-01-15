@@ -24,6 +24,9 @@ import {
 import {ShowHideDirective} from './show-hide';
 import {MediaQueriesModule} from '../../media-query/_module';
 
+import {ServerStylesheet} from '../../utils/styling/server-stylesheet';
+import {StyleService} from '../../utils/styling/styler';
+
 describe('hide directive', () => {
   let fixture: ComponentFixture<any>;
   let matchMedia: MockMatchMedia;
@@ -60,7 +63,9 @@ describe('hide directive', () => {
       declarations: [TestHideComponent, ShowHideDirective],
       providers: [
         BreakPointRegistry, DEFAULT_BREAKPOINTS_PROVIDER,
-        {provide: MatchMedia, useClass: MockMatchMedia}
+        {provide: MatchMedia, useClass: MockMatchMedia},
+        ServerStylesheet,
+        StyleService,
       ]
     });
   });

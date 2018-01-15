@@ -21,6 +21,8 @@ import {BreakPointRegistry} from '../../media-query/breakpoints/break-point-regi
 
 import {ClassDirective} from './class';
 import {MediaQueriesModule} from '../../media-query/_module';
+import {ServerStylesheet} from '../../utils/styling/server-stylesheet';
+import {StyleService} from '../../utils/styling/styler';
 
 describe('class directive', () => {
   let fixture: ComponentFixture<any>;
@@ -46,7 +48,9 @@ describe('class directive', () => {
       declarations: [TestClassComponent, ClassDirective],
       providers: [
         BreakPointRegistry, DEFAULT_BREAKPOINTS_PROVIDER,
-        {provide: MatchMedia, useClass: MockMatchMedia}
+        {provide: MatchMedia, useClass: MockMatchMedia},
+        ServerStylesheet,
+        StyleService,
       ]
     });
   });

@@ -12,12 +12,11 @@ import {
   OnInit,
   OnChanges,
   Renderer2,
-  Inject,
-  PLATFORM_ID,
 } from '@angular/core';
 
 import {BaseFxDirective} from '../core/base';
 import {MediaMonitor} from '../../media-query/media-monitor';
+import {StyleService} from '../../utils/styling/styler';
 
 /**
  * This directive provides a responsive API for the HTML <img> 'src' attribute
@@ -57,12 +56,12 @@ export class ImgSrcDirective extends BaseFxDirective implements OnInit, OnChange
   @Input('src.gt-lg')  set srcGtLg(val) { this._cacheInput('srcGtLg', val);  }
   /* tslint:enable */
 
-  constructor(elRef: ElementRef,
-              renderer: Renderer2,
-              monitor: MediaMonitor,
-              @Inject(PLATFORM_ID) platformId: Object) {
-    super(monitor, elRef, renderer, platformId);
-    this._cacheInput('src', elRef.nativeElement.getAttribute('src') || '');
+  constructor(protected _elRef: ElementRef,
+              protected _renderer: Renderer2,
+              protected _monitor: MediaMonitor,
+              protected _styler: StyleService) {
+    super(_monitor, _elRef, _styler);
+    this._cacheInput('src', _elRef.nativeElement.getAttribute('src') || '');
   }
 
   /**

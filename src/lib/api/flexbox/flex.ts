@@ -8,14 +8,11 @@
 import {
   Directive,
   ElementRef,
-  Inject,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
   Optional,
-  PLATFORM_ID,
-  Renderer2,
   SimpleChanges,
   SkipSelf,
 } from '@angular/core';
@@ -29,6 +26,7 @@ import {MediaMonitor} from '../../media-query/media-monitor';
 import {LayoutDirective} from './layout';
 import {validateBasis} from '../../utils/basis-validator';
 import {isFlowHorizontal} from '../../utils/layout-validator';
+import {StyleService} from '../../utils/styling/styler';
 
 
 /** Built-in aliases for different flex-basis values. */
@@ -85,11 +83,9 @@ export class FlexDirective extends BaseFxDirective implements OnInit, OnChanges,
   //       for the parent flex container for this flex item.
   constructor(monitor: MediaMonitor,
               elRef: ElementRef,
-              renderer: Renderer2,
               @Optional() @SkipSelf() protected _container: LayoutDirective,
-              @Inject(PLATFORM_ID) platformId: Object) {
-
-    super(monitor, elRef, renderer, platformId);
+              protected styleUtils: StyleService) {
+    super(monitor, elRef, styleUtils);
 
     this._cacheInput('flex', '');
     this._cacheInput('shrink', 1);

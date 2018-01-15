@@ -16,11 +16,11 @@ import {
 } from '@angular/core';
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 
-import {applyCssPrefixes} from './auto-prefixer';
-import {ServerStylesheet} from '../utils/server-stylesheet';
+import {applyCssPrefixes} from '../auto-prefixer';
+import {ServerStylesheet} from './server-stylesheet';
 
 @Injectable()
-export class StyleUtils {
+export class StyleService {
 
   private _renderer: Renderer2;
 

@@ -22,6 +22,8 @@ import {customMatchers} from '../../utils/testing/custom-matchers';
 import {
   makeCreateTestComponent, expectNativeEl
 } from '../../utils/testing/helpers';
+import {ServerStylesheet} from '../../utils/styling/server-stylesheet';
+import {StyleService} from '../../utils/styling/styler';
 
 describe('style directive', () => {
   let fixture: ComponentFixture<any>;
@@ -43,7 +45,9 @@ describe('style directive', () => {
       declarations: [TestStyleComponent, LayoutDirective, StyleDirective],
       providers: [
         BreakPointRegistry, DEFAULT_BREAKPOINTS_PROVIDER,
-        {provide: MatchMedia, useClass: MockMatchMedia}
+        {provide: MatchMedia, useClass: MockMatchMedia},
+        ServerStylesheet,
+        StyleService,
       ]
     });
   });

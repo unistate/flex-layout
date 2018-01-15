@@ -1,0 +1,9 @@
+{
+  "spec_dir": "dist/packages/flex-layout",
+  "spec_files": [
+    "api/flexbox/layout.spec.js",
+    "api/flexbox/layout-align.spec.js"
+  ],
+  "random": true,
+  "captureConsole": true
+}

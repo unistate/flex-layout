@@ -13,11 +13,8 @@ import {
   OnChanges,
   OnDestroy,
   Optional,
-  Renderer2,
   SimpleChanges,
   SkipSelf,
-  Inject,
-  PLATFORM_ID,
 } from '@angular/core';
 
 import {Subscription} from 'rxjs/Subscription';
@@ -27,6 +24,7 @@ import {MediaChange} from '../../media-query/media-change';
 import {MediaMonitor} from '../../media-query/media-monitor';
 import {LayoutDirective} from './layout';
 import {isFlowHorizontal} from '../../utils/layout-validator';
+import {StyleService} from '../../utils/styling/styler';
 
 /**
  * 'flex-offset' flexbox styling directive
@@ -61,10 +59,9 @@ export class FlexOffsetDirective extends BaseFxDirective implements OnInit, OnCh
   /* tslint:enable */
   constructor(monitor: MediaMonitor,
               elRef: ElementRef,
-              renderer: Renderer2,
               @Optional() @SkipSelf() protected _container: LayoutDirective,
-              @Inject(PLATFORM_ID) platformId: Object) {
-    super(monitor, elRef, renderer, platformId);
+              styleUtils: StyleService) {
+    super(monitor, elRef, styleUtils);
 
 
     this.watchParentFlow();

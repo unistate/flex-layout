@@ -16,23 +16,20 @@ import {MatchMedia} from '../../media-query/match-media';
 import {FlexLayoutModule} from '../../module';
 
 import {customMatchers} from '../../utils/testing/custom-matchers';
-import {
-  makeCreateTestComponent,
-  makeExpectDOMFrom,
-  makeExpectDOMForQuery,
-  expectNativeEl
-} from '../../utils/testing/helpers';
+import {makeCreateTestComponent, expectNativeEl} from '../../utils/testing/helpers';
+import {StyleService} from '../../utils/styling/styler';
+import {queryFor} from '../../utils/testing/helpers';
 
 describe('layout directive', () => {
   let fixture: ComponentFixture<any>;
   let matchMedia: MockMatchMedia;
-  let expectDOMFrom = makeExpectDOMFrom(() => TestLayoutComponent);
-  let expectDomForQuery = makeExpectDOMForQuery(() => TestLayoutComponent);
+  let styler: StyleService;
   let createTestComponent = (template: string) => {
     fixture = makeCreateTestComponent(() => TestLayoutComponent)(template);
 
-    inject([MatchMedia], (_matchMedia: MockMatchMedia) => {
+    inject([MatchMedia, StyleService], (_matchMedia: MockMatchMedia, _styler: StyleService) => {
       matchMedia = _matchMedia;
+      styler = _styler;
     })();
   };
 
@@ -45,7 +42,8 @@ describe('layout directive', () => {
       declarations: [TestLayoutComponent],
       providers: [
         BreakPointRegistry, DEFAULT_BREAKPOINTS_PROVIDER,
-        {provide: MatchMedia, useClass: MockMatchMedia}
+        {provide: MatchMedia, useClass: MockMatchMedia},
+        StyleService,
       ]
     });
   });
@@ -53,55 +51,59 @@ describe('layout directive', () => {
   describe('with static features', () => {
 
     it('should add correct styles for default `fxLayout` usage', () => {
-      expectDOMFrom(`<div fxLayout></div>`).toHaveStyle({
+      createTestComponent(`<div fxLayout></div>`);
+      expectNativeEl(fixture).toHaveStyle({
         'display': 'flex',
         'flex-direction': 'row',
         'box-sizing': 'border-box'
-      });
+      }, styler);
     });
     it('should add correct styles for `fxLayout="row"` usage', () => {
-      expectDOMFrom(`
-        <div fxLayout='row'></div>
-      `).toHaveStyle({
+      createTestComponent(`<div fxLayout='row'></div>`);
+      expectNativeEl(fixture).toHaveStyle({
         'display': 'flex',
         'flex-direction': 'row',
         'box-sizing': 'border-box'
-      });
+      }, styler);
     });
     it('should add correct styles for `fxLayout="row wrap"` usage', () => {
-      expectDOMFrom(`
-        <div fxLayout='row wrap'></div>
-      `).toHaveStyle({
+      createTestComponent(`<div fxLayout='row wrap'></div>`);
+      expectNativeEl(fixture).toHaveStyle({
         'display': 'flex',
         'flex-direction': 'row',
         'box-sizing': 'border-box',
         'flex-wrap': 'wrap'
-      });
+      }, styler);
     });
     it('should add correct styles for `fxLayout="column"` usage', () => {
-      expectDOMFrom(`<div fxLayout='column'></div>`).toHaveStyle({
+      createTestComponent(`<div fxLayout='column'></div>`);
+      expectNativeEl(fixture).toHaveStyle({
         'display': 'flex',
         'flex-direction': 'column',
         'box-sizing': 'border-box'
-      });
+      }, styler);
     });
     it('should add correct styles for binding `[fxLayout]="direction"` usage', () => {
-      expectDOMFrom(`<div [fxLayout]='direction'></div>`).toHaveStyle({
+      createTestComponent(`<div [fxLayout]='direction'></div>`);
+      expectNativeEl(fixture).toHaveStyle({
         'display': 'flex',
         'flex-direction': 'column',
         'box-sizing': 'border-box'
-      });
+      }, styler);
     });
     it('should use default flex-direction for invalid value `fxLayout="invalid"` usage', () => {
-      expectDOMFrom(`<div fxLayout='invalid'></div>`).toHaveStyle({
+      createTestComponent(`<div fxLayout='invalid'></div>`);
+      expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'row'
-      });
+      }, styler);
     });
     it('should use default flex-direction for invalid binding value `[fxLayout]="direction"` usage', () => { // tslint:disable-line:max-line-length
-      expectDOMFrom(`<div [fxLayout]='direction'></div>`, 'direction', 'invalid')
-          .toHaveStyle({
-            'flex-direction': 'row',
-          });
+      createTestComponent(`<div [fxLayout]='direction'></div>`);
+      fixture.componentInstance.direction = 'invalid';
+      expectNativeEl(fixture)
+        .toHaveStyle({
+          'flex-direction': 'row',
+        }, styler);
     });
     it('should use update style with dynamic value changes `[fxLayout]="direction"` usage', () => {
       createTestComponent(`<div [fxLayout]='direction'></div>`);
@@ -109,12 +111,12 @@ describe('layout directive', () => {
       fixture.componentInstance.direction = 'invalid';
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'row',
-      });
+      }, styler);
 
       fixture.componentInstance.direction = 'column';
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'column'
-      });
+      }, styler);
 
     });
 
@@ -132,11 +134,13 @@ describe('layout directive', () => {
           <div fxFlex >      fxFlex       </div>
         </div>
       `;
+      let selector = '[fxLayout="row-reverse"]';
 
-      expectDomForQuery(template, '[fxLayout="row-reverse"]')
-          .toHaveStyle({
-            'flex-direction': 'row-reverse',
-          });
+      createTestComponent(template);
+      fixture.detectChanges();
+      (expect(queryFor(fixture, selector)[0].nativeElement) as any).toHaveStyle({
+        'flex-direction': 'row-reverse',
+      }, styler);
     });
 
   });
@@ -150,21 +154,21 @@ describe('layout directive', () => {
          'flex-direction': 'row',
          'box-sizing': 'border-box',
          'flex-wrap': 'wrap'
-       });
+       }, styler);
     });
 
     it('should fallback to `wrap` for invalid options', () => {
        createTestComponent(`<div fxLayout='row warpped'></div>`);
        expectNativeEl(fixture).toHaveStyle({
          'flex-wrap': 'wrap'
-       });
+       }, styler);
     });
 
     it('should fallback to `wrap` for invalid options', () => {
        createTestComponent(`<div fxLayout='row wrap-rev'></div>`);
        expectNativeEl(fixture).toHaveStyle({
          'flex-wrap': 'wrap'
-       });
+       }, styler);
     });
 
   });
@@ -176,7 +180,7 @@ describe('layout directive', () => {
        expectNativeEl(fixture).toHaveStyle({
          'display': 'inline-flex',
          'flex-direction': 'row'
-       });
+       }, styler);
     });
 
     it('should recognize `line` used with `wrap`', () => {
@@ -184,7 +188,7 @@ describe('layout directive', () => {
        expectNativeEl(fixture).toHaveStyle({
          'display': 'inline-flex',
          'flex-wrap': 'wrap'
-       });
+       }, styler);
     });
 
     it('should recognize `inline` used with `wrap`', () => {
@@ -192,7 +196,7 @@ describe('layout directive', () => {
        expectNativeEl(fixture).toHaveStyle({
          'display': 'inline-flex',
          'flex-wrap': 'wrap'
-       });
+       }, styler);
     });
 
     it('should fallback to `wrap` for invalid options', () => {
@@ -200,7 +204,7 @@ describe('layout directive', () => {
           expectNativeEl(fixture).toHaveStyle({
             'display': 'inline-flex',
             'flex-wrap': 'wrap'
-          });
+          }, styler);
        });
 
   });
@@ -215,17 +219,16 @@ describe('layout directive', () => {
         'display': 'flex',
         'flex-direction': 'column',
         'box-sizing': 'border-box'
-      });
+      }, styler);
     });
     it('should add responsive styles when configured', () => {
       createTestComponent(`<div fxLayout fxLayout.md='column reverse-wrap'></div>`);
 
       expectNativeEl(fixture).toHaveStyle({
-
         'display': 'flex',
         'flex-direction': 'row',
         'box-sizing': 'border-box'
-      });
+      }, styler);
 
       matchMedia.activate('md');
       expectNativeEl(fixture).toHaveStyle({
@@ -233,28 +236,28 @@ describe('layout directive', () => {
         'flex-direction': 'column',
         'box-sizing': 'border-box',
         'flex-wrap': 'wrap-reverse'
-      });
+      }, styler);
 
       matchMedia.activate('lg');
       expectNativeEl(fixture).not.toHaveStyle({
         'flex-wrap': 'reverse-wrap'
-      });
+      }, styler);
     });
     it('should update responsive styles when the active mediaQuery changes', () => {
       createTestComponent(`<div fxLayout fxLayout.md='column'></div>`);
 
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'row'
-      });
+      }, styler);
 
       matchMedia.activate('md');
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'column'
-      });
+      }, styler);
       matchMedia.activate('all');
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'row'
-      });
+      }, styler);
     });
 
     it('should update styles with bindings and the active mediaQuery changes', () => {
@@ -263,13 +266,13 @@ describe('layout directive', () => {
                [fxLayout.md]='direction'>
           </div>
        `);
-      expectNativeEl(fixture).toHaveStyle({'flex-direction': 'row'});
+      expectNativeEl(fixture).toHaveStyle({'flex-direction': 'row'}, styler);
 
       matchMedia.activate('md');
-      expectNativeEl(fixture).toHaveStyle({'flex-direction': 'column'});
+      expectNativeEl(fixture).toHaveStyle({'flex-direction': 'column'}, styler);
 
       fixture.componentInstance.direction = 'row';
-      expectNativeEl(fixture).toHaveStyle({'flex-direction': 'row'});
+      expectNativeEl(fixture).toHaveStyle({'flex-direction': 'row'}, styler);
 
 
     });
@@ -278,16 +281,16 @@ describe('layout directive', () => {
 
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'row'
-      });
+      }, styler);
 
       matchMedia.activate('md');
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'column'
-      });
+      }, styler);
       matchMedia.activate('lg');
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'row'
-      });
+      }, styler);
 
     });
     it('should fallback to closest overlapping value when the active mediaQuery change is not configured', () => { // tslint:disable-line:max-line-length
@@ -295,22 +298,22 @@ describe('layout directive', () => {
 
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'row'
-      });
+      }, styler);
 
       matchMedia.activate('gt-sm');
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'column'
-      });
+      }, styler);
       matchMedia.activate('md');
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'row'
-      });
+      }, styler);
 
       // Should fallback to value for 'gt-sm'
       matchMedia.activate('lg', true);
       expectNativeEl(fixture).toHaveStyle({
         'flex-direction': 'column'
-      });
+      }, styler);
     });
 
   });
