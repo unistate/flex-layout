@@ -17,6 +17,8 @@ export * from './match-media';
 export * from './media-change';
 export * from './media-monitor';
 
+export * from './media-observable';
+
 export * from './breakpoints/break-points-provider';
 export * from './observable-media-provider';
 export * from './media-monitor-provider';
